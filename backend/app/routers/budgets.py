@@ -12,9 +12,19 @@ from ..schemas import BudgetCreate, BudgetOut, BudgetStatus, BudgetUpdate
 router = APIRouter(prefix="/api/budgets", tags=["budgets"])
 
 
-def _current_month_spent(db: Session, user_id: int, category: str) -> float:
+def _current_month_bounds() -> tuple[date, date]:
+    """Return [month_start, next_month_start) for the current month."""
     today = date.today()
     month_start = today.replace(day=1)
+    if today.month == 12:
+        next_month_start = today.replace(year=today.year + 1, month=1, day=1)
+    else:
+        next_month_start = today.replace(month=today.month + 1, day=1)
+    return month_start, next_month_start
+
+
+def _current_month_spent(db: Session, user_id: int, category: str) -> float:
+    month_start, next_month_start = _current_month_bounds()
     rows = (
         db.query(Transaction)
         .filter(
@@ -22,6 +32,7 @@ def _current_month_spent(db: Session, user_id: int, category: str) -> float:
             Transaction.category == category,
             Transaction.type == "debit",
             Transaction.date >= month_start,
+            Transaction.date < next_month_start,
         )
         .all()
     )

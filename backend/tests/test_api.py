@@ -126,6 +126,46 @@ def test_budgets_over_budget_alert(client):
     assert status[0]["spent"] == 750000
 
 
+def test_budget_status_excludes_future_month(client):
+    """Transactions in future months must not be counted in current-month spend."""
+    from datetime import date as _date
+
+    headers = _signup(client)
+    today = _date.today()
+    # Always pick a date strictly after the current month.
+    if today.month == 12:
+        future = today.replace(year=today.year + 1, month=1, day=15)
+    else:
+        future = today.replace(month=today.month + 1, day=15)
+
+    r = client.post(
+        "/api/transactions",
+        json={
+            "date": future.isoformat(),
+            "amount": 999999,
+            "type": "debit",
+            "description": "FUTURE EXPENSE",
+            "category": "Food & Drink",
+        },
+        headers=headers,
+    )
+    assert r.status_code == 201
+
+    r = client.post(
+        "/api/budgets",
+        json={"category": "Food & Drink", "monthly_limit": 500000},
+        headers=headers,
+    )
+    assert r.status_code == 201
+
+    r = client.get("/api/budgets/status", headers=headers)
+    assert r.status_code == 200
+    status = r.json()
+    assert len(status) == 1
+    assert status[0]["spent"] == 0
+    assert status[0]["over_budget"] is False
+
+
 def test_pdf_export(client):
     headers = _signup(client)
     r = client.post(

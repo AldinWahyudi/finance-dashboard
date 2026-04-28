@@ -62,10 +62,14 @@ export function Budgets() {
 
   return (
     <>
-      <h2 style={{ margin: "0 0 1rem" }}>Budgets</h2>
-      <p className="muted">
-        Set a monthly limit per category. Over-budget categories are flagged on the dashboard.
-      </p>
+      <div className="page-head">
+        <div>
+          <h2>Budgets</h2>
+          <div className="sub">
+            Set a monthly limit per category. Over-budget categories are flagged on the dashboard.
+          </div>
+        </div>
+      </div>
       {err && <div className="alert danger">{err}</div>}
 
       <div className="card mb-2">

@@ -29,12 +29,15 @@ export function ImportPage() {
 
   return (
     <>
-      <h2 style={{ margin: "0 0 1rem" }}>Import CSV</h2>
+      <div className="page-head">
+        <div>
+          <h2>Import CSV</h2>
+          <div className="sub">
+            Upload a statement export from BCA, Mandiri, BNI, or BRI. Bank is auto-detected from the CSV header; use the dropdown below to override.
+          </div>
+        </div>
+      </div>
       <div className="card">
-        <p className="muted" style={{ marginTop: 0 }}>
-          Upload a statement export from BCA, Mandiri, BNI, or BRI. Bank is auto-detected from the
-          CSV header; use the dropdown below to override.
-        </p>
         <div className="flex gap-2 wrap mb-2" style={{ alignItems: "flex-end" }}>
           <div style={{ minWidth: 200 }}>
             <label>Bank (optional)</label>

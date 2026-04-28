@@ -66,8 +66,11 @@ export function Transactions() {
 
   return (
     <>
-      <div className="flex between mb-2 wrap gap-2">
-        <h2 style={{ margin: 0 }}>Transactions</h2>
+      <div className="page-head">
+        <div>
+          <h2>Transactions</h2>
+          <div className="sub">All imported and manually-added transactions.</div>
+        </div>
         <button className="secondary" onClick={recategorize}>
           Re-run auto-categorization
         </button>

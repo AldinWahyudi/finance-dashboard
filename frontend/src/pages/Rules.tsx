@@ -57,12 +57,14 @@ export function Rules() {
 
   return (
     <>
-      <h2 style={{ margin: "0 0 1rem" }}>Category rules</h2>
-      <p className="muted">
-        When a transaction description contains the keyword (case-insensitive), it gets the matching
-        category. Higher-priority rules run first. Built-in defaults cover common Indonesian
-        merchants.
-      </p>
+      <div className="page-head">
+        <div>
+          <h2>Category rules</h2>
+          <div className="sub">
+            Keyword matches in descriptions assign categories. Higher priority runs first.
+          </div>
+        </div>
+      </div>
       {err && <div className="alert danger">{err}</div>}
 
       <div className="card mb-2">

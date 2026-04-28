@@ -166,6 +166,47 @@ def test_budget_status_excludes_future_month(client):
     assert status[0]["over_budget"] is False
 
 
+def test_patch_transaction_ignores_null_values(client):
+    """PATCH with explicit nulls must not violate non-nullable DB columns."""
+    headers = _signup(client)
+    today = date.today().isoformat()
+    r = client.post(
+        "/api/transactions",
+        json={
+            "date": today,
+            "amount": 50000,
+            "type": "debit",
+            "description": "ORIGINAL DESC",
+            "category": "Food & Drink",
+        },
+        headers=headers,
+    )
+    assert r.status_code == 201
+    tx_id = r.json()["id"]
+
+    # Explicit nulls on non-nullable columns must be ignored, not 500.
+    r = client.patch(
+        f"/api/transactions/{tx_id}",
+        json={"category": None, "description": None, "type": None, "amount": None},
+        headers=headers,
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["category"] == "Food & Drink"
+    assert body["description"] == "ORIGINAL DESC"
+    assert body["type"] == "debit"
+    assert body["amount"] == 50000
+
+    # Real updates still apply.
+    r = client.patch(
+        f"/api/transactions/{tx_id}",
+        json={"category": "Shopping"},
+        headers=headers,
+    )
+    assert r.status_code == 200
+    assert r.json()["category"] == "Shopping"
+
+
 def test_pdf_export(client):
     headers = _signup(client)
     r = client.post(

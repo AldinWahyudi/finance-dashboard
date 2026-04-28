@@ -85,6 +85,8 @@ def update_transaction(
     if "amount" in data and data["amount"] is not None:
         data["amount"] = abs(data["amount"])
     for k, v in data.items():
+        if v is None:
+            continue
         setattr(tx, k, v)
     db.commit()
     db.refresh(tx)
